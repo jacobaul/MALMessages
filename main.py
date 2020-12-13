@@ -10,14 +10,6 @@ import math
 
 import pprint
 
-chrome_options = Options()
-#chrome_options.add_argument("--disable-gpu")
-#chrome_options.add_argument("--headless")
-driver = webdriver.Chrome(options=chrome_options)
-
-username = "unamehere"
-password = 'pwordhere'
-
 def get_full_message_text(url):
     driver.get(url)
     message = driver.find_element_by_class_name('dialog-text')
@@ -88,7 +80,15 @@ def get_messages(url, is_received, n = 20):
     return messages
 
 
-def login():
+def login(username, password):
+
+    chrome_options = Options()
+    #chrome_options.add_argument("--disable-gpu")
+    #chrome_options.add_argument("--headless")
+    global driver 
+    driver = webdriver.Chrome(options=chrome_options)
+
+
 
     driver.get('https://myanimelist.net/login.php')
 
@@ -106,6 +106,7 @@ def login():
 
         driver.execute_script("arguments[0].click();", login_button)
         #login_button.click()
+    time.sleep(1)
 
 def get_n_received_messages(n):
     n_messages = []
@@ -234,17 +235,22 @@ def get_new_since(date):
 
     return sorted_all
 
+def get_new_since_user(date, user):
+    new = get_new_since(date)
+    filtered = [message for message in new if message["user"] == user]
+    return filtered
 
+def logout():
+    driver.close()
 
+if(__name__ == "__main__"):
+    login('username', 'password')
+    time.sleep(1)
+    one_month = datetime.datetime.now() - datetime.timedelta(days=30)
+    messages = get_n_combined_user(5, 'isaiah4926')
+    #driver.close()
 
-login()
-time.sleep(1)
-one_month = datetime.datetime.now() - datetime.timedelta(days=30)
-messages = get_new_since(one_month)
-#driver.close()
-
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(messages)
-
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(messages)
 
 
